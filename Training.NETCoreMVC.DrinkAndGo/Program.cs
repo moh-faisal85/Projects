@@ -1,6 +1,12 @@
+using Training.NETCoreMVC.DrinkAndGo.Data.Mocks;
+using Training.NETCoreMVC.DrinkAndGo.interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddTransient<IDrinkRepository, MockDrinkRepository>();
+builder.Services.AddTransient<ICategoryRepository, MockCategoryRepository>();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddMvc();
 

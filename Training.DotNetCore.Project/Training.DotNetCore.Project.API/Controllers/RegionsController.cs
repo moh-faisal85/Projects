@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.DTO;
 using Training.DotNetCore.Project.API.Models.Domain;
+using Training.DotNetCore.Project.API.Repositories;
 
 namespace Training.DotNetCore.Project.API.Controllers
 {
@@ -13,10 +14,14 @@ namespace Training.DotNetCore.Project.API.Controllers
     [ApiController]
     public class RegionsController : ControllerBase
     {
-        private readonly NZWalksDbContext dbContext;
-        public RegionsController(NZWalksDbContext nZWalksDbContext)
+        //private readonly NZWalksDbContext dbContext;
+        private readonly IRegionRepository regionRepository;
+
+        //public RegionsController(NZWalksDbContext _dbContext, IRegionRepository _regionRepository)
+        public RegionsController(IRegionRepository _regionRepository)
         {
-            this.dbContext = nZWalksDbContext;
+            //this.dbContext = _dbContext;
+            this.regionRepository = _regionRepository;
         }
 
         ////GET ALL REGION
@@ -25,8 +30,8 @@ namespace Training.DotNetCore.Project.API.Controllers
         public async Task<IActionResult> GetAll() //async Task Added to make this action async
         {
             //Get Data From Database - Domain Models
-            var regionDomainModels = await dbContext.Regions.ToListAsync();//await added to enable this async operation
-
+            //var regionDomainModels = await dbContext.Regions.ToListAsync();//await added to enable this async operation
+            var regionDomainModels = await regionRepository.GetAllAsync();//await added to enable this async operation
             // Map Domain Models to DTOs
             var regionDto = new List<RegionDto>();
             foreach (var regionDomainModel in regionDomainModels)
@@ -52,7 +57,8 @@ namespace Training.DotNetCore.Project.API.Controllers
             //Get Data From Database - Domain Models
 
             //var region = dbContext.Regions.Find(id);//Find mehtod used to get record based on PRIMARY KEY field column value like Id
-            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
+            //var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
+            var regionDomainModel = await regionRepository.GetByIdAsync(id);
             if (regionDomainModel == null)
             {
                 return NotFound();
@@ -80,9 +86,11 @@ namespace Training.DotNetCore.Project.API.Controllers
                 Name = addRegionRequestDto.Name,
                 RegionImageUrl = addRegionRequestDto.RegionImageUrl
             };
-            await dbContext.Regions.AddAsync(regionDomainModel);
-            await dbContext.SaveChangesAsync();
 
+            //Call Repository method instead of calling dbcontext method directly.
+            //await dbContext.Regions.AddAsync(regionDomainModel);
+            //await dbContext.SaveChangesAsync();
+            regionDomainModel = await regionRepository.CreateAsync(regionDomainModel);
             //Map Domain Model back to DTO
 
             var regionDto = new RegionDto
@@ -102,18 +110,28 @@ namespace Training.DotNetCore.Project.API.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Check region exists
-            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
+            //var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
+
+            var regionDomainModel = new Region
+            {
+                Id = id,//From Id Parameter
+                code = updateRegionRequestDto.code,
+                Name = updateRegionRequestDto.Name,
+                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
+            };
+
+            regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
             if (regionDomainModel == null)
             {
                 return NotFound();
             }
-            // Map DTO  to Domain Models
-            regionDomainModel.Name = updateRegionRequestDto.Name;
-            regionDomainModel.code = updateRegionRequestDto.code;
-            regionDomainModel.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
-            
-            //Save Changes
-            await dbContext.SaveChangesAsync();
+            //// Map DTO  to Domain Models
+            //regionDomainModel.Name = updateRegionRequestDto.Name;
+            //regionDomainModel.code = updateRegionRequestDto.code;
+            //regionDomainModel.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
+
+            ////Save Changes
+            //await dbContext.SaveChangesAsync();
 
             //Convert Domain Model to DTO
 
@@ -121,8 +139,8 @@ namespace Training.DotNetCore.Project.API.Controllers
             {
                 Id = regionDomainModel.Id,
                 Name = regionDomainModel.Name,
-                code =  regionDomainModel.code,
-                RegionImageUrl= regionDomainModel.RegionImageUrl
+                code = regionDomainModel.code,
+                RegionImageUrl = regionDomainModel.RegionImageUrl
             };
             return Ok(regionDto);
         }
@@ -134,14 +152,15 @@ namespace Training.DotNetCore.Project.API.Controllers
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             //Check region exists
-            var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
+            //var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
+            var regionDomainModel = await regionRepository.DeleteAsync(id);
             if (regionDomainModel == null)
             {
                 return NotFound();
             }
             //Delete Region if exists
-            dbContext.Regions.Remove(regionDomainModel);
-            await dbContext.SaveChangesAsync();
+            //dbContext.Regions.Remove(regionDomainModel);
+            //await dbContext.SaveChangesAsync();
 
             //Return Deleted Region back
             var regionDto = new RegionDto

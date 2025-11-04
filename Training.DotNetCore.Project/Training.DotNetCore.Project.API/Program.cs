@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Training.DotNetCore.Project.API.Data;
+using Training.DotNetCore.Project.API.Mappings;
 using Training.DotNetCore.Project.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,9 @@ builder.Services.AddDbContext<NZWalksDbContext>
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository> ();
 //Switch from SQLRegionRepository to InMemoryRegionRepository
 //builder.Services.AddScoped<IRegionRepository, InMemoryRegionRepository>();
+
+//Scan Automapper Profiles
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 

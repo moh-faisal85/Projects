@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.DTO;
@@ -16,12 +17,14 @@ namespace Training.DotNetCore.Project.API.Controllers
     {
         //private readonly NZWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
+        private readonly IMapper mapper;
 
         //public RegionsController(NZWalksDbContext _dbContext, IRegionRepository _regionRepository)
-        public RegionsController(IRegionRepository _regionRepository)
+        public RegionsController(IRegionRepository _regionRepository, IMapper _mapper)
         {
             //this.dbContext = _dbContext;
             this.regionRepository = _regionRepository;
+            this.mapper = _mapper;
         }
 
         ////GET ALL REGION
@@ -32,19 +35,23 @@ namespace Training.DotNetCore.Project.API.Controllers
             //Get Data From Database - Domain Models
             //var regionDomainModels = await dbContext.Regions.ToListAsync();//await added to enable this async operation
             var regionDomainModels = await regionRepository.GetAllAsync();//await added to enable this async operation
+
             // Map Domain Models to DTOs
-            var regionDto = new List<RegionDto>();
-            foreach (var regionDomainModel in regionDomainModels)
-            {
-                regionDto.Add(new RegionDto()
-                {
-                    Id = regionDomainModel.Id,
-                    Name = regionDomainModel.Name,
-                    code = regionDomainModel.code,
-                    RegionImageUrl = regionDomainModel.RegionImageUrl
-                });
-            }
-            return Ok(regionDto);
+            //var regionDto = new List<RegionDto>();
+            //foreach (var regionDomainModel in regionDomainModels)
+            //{
+            //    regionDto.Add(new RegionDto()
+            //    {
+            //        Id = regionDomainModel.Id,
+            //        Name = regionDomainModel.Name,
+            //        code = regionDomainModel.code,
+            //        RegionImageUrl = regionDomainModel.RegionImageUrl
+            //    });
+            //}
+
+            //Map object regionDomainModels to RegionDto
+            var regionDtos = mapper.Map<List<RegionDto>>(regionDomainModels);
+            return Ok(regionDtos);
         }
 
         // GET SINGLE REGION (Get Region By ID) 
@@ -64,13 +71,16 @@ namespace Training.DotNetCore.Project.API.Controllers
                 return NotFound();
             }
             // Map Domain Models to DTOs
-            var regionDto = new RegionDto()
-            {
-                Id = regionDomainModel.Id,
-                Name = regionDomainModel.Name,
-                code = regionDomainModel.code,
-                RegionImageUrl = regionDomainModel.RegionImageUrl
-            };
+            //var regionDto = new RegionDto()
+            //{
+            //    Id = regionDomainModel.Id,
+            //    Name = regionDomainModel.Name,
+            //    code = regionDomainModel.code,
+            //    RegionImageUrl = regionDomainModel.RegionImageUrl
+            //};
+
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
+
             return Ok(regionDto);
         }
 
@@ -80,12 +90,15 @@ namespace Training.DotNetCore.Project.API.Controllers
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //Map or Convert DTO to Domain Model
-            var regionDomainModel = new Region
-            {
-                code = addRegionRequestDto.code,
-                Name = addRegionRequestDto.Name,
-                RegionImageUrl = addRegionRequestDto.RegionImageUrl
-            };
+            //var regionDomainModel = new Region
+            //{
+            //    code = addRegionRequestDto.code,
+            //    Name = addRegionRequestDto.Name,
+            //    RegionImageUrl = addRegionRequestDto.RegionImageUrl
+            //};
+
+            //Map or Convert DTO to Domain Model - Source: addRegionRequestDto and Target: Region
+            var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
 
             //Call Repository method instead of calling dbcontext method directly.
             //await dbContext.Regions.AddAsync(regionDomainModel);
@@ -93,13 +106,16 @@ namespace Training.DotNetCore.Project.API.Controllers
             regionDomainModel = await regionRepository.CreateAsync(regionDomainModel);
             //Map Domain Model back to DTO
 
-            var regionDto = new RegionDto
-            {
-                Id = regionDomainModel.Id,
-                Name = regionDomainModel.Name,
-                code = regionDomainModel.code,
-                RegionImageUrl = regionDomainModel.RegionImageUrl
-            };
+            //var regionDto = new RegionDto
+            //{
+            //    Id = regionDomainModel.Id,
+            //    Name = regionDomainModel.Name,
+            //    code = regionDomainModel.code,
+            //    RegionImageUrl = regionDomainModel.RegionImageUrl
+            //};
+
+            //Map or Convert Domain Model to DTO- Source:RegionDomainModel  and Target: RegionDto
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
             return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
         }
 
@@ -112,13 +128,15 @@ namespace Training.DotNetCore.Project.API.Controllers
             //Check region exists
             //var regionDomainModel = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);//We can use this approaches to filter data based on ANY column value
 
-            var regionDomainModel = new Region
-            {
-                Id = id,//From Id Parameter
-                code = updateRegionRequestDto.code,
-                Name = updateRegionRequestDto.Name,
-                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
-            };
+            //var regionDomainModel = new Region
+            //{
+            //    Id = id,//From Id Parameter
+            //    code = updateRegionRequestDto.code,
+            //    Name = updateRegionRequestDto.Name,
+            //    RegionImageUrl = updateRegionRequestDto.RegionImageUrl
+            //};
+            //Map DTO to Domain Model Object - Source:updateRegionRequestDto, Target: Region
+            var regionDomainModel = mapper.Map<Region>(updateRegionRequestDto);
 
             regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
             if (regionDomainModel == null)
@@ -134,14 +152,17 @@ namespace Training.DotNetCore.Project.API.Controllers
             //await dbContext.SaveChangesAsync();
 
             //Convert Domain Model to DTO
+            //var regionDto = new RegionDto
+            //{
+            //    Id = regionDomainModel.Id,
+            //    Name = regionDomainModel.Name,
+            //    code = regionDomainModel.code,
+            //    RegionImageUrl = regionDomainModel.RegionImageUrl
+            //};
 
-            var regionDto = new RegionDto
-            {
-                Id = regionDomainModel.Id,
-                Name = regionDomainModel.Name,
-                code = regionDomainModel.code,
-                RegionImageUrl = regionDomainModel.RegionImageUrl
-            };
+            //Map Domain Model  to DTO Object - Source:Region (regionDomainModel), Target: RegionDto
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
+
             return Ok(regionDto);
         }
 
@@ -161,15 +182,17 @@ namespace Training.DotNetCore.Project.API.Controllers
             //Delete Region if exists
             //dbContext.Regions.Remove(regionDomainModel);
             //await dbContext.SaveChangesAsync();
-
+             
             //Return Deleted Region back
-            var regionDto = new RegionDto
-            {
-                Id = regionDomainModel.Id,
-                Name = regionDomainModel.Name,
-                code = regionDomainModel.code,
-                RegionImageUrl = regionDomainModel.RegionImageUrl
-            };
+            //var regionDto = new RegionDto
+            //{
+            //    Id = regionDomainModel.Id,
+            //    Name = regionDomainModel.Name,
+            //    code = regionDomainModel.code,
+            //    RegionImageUrl = regionDomainModel.RegionImageUrl
+            //};
+            //Map Domain Model  to DTO Object - Source:Region (regionDomainModel), Target: RegionDto
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
             return Ok(regionDto);
 
         }

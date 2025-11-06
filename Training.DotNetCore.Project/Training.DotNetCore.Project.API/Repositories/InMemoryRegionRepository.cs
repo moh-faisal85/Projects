@@ -22,14 +22,14 @@ namespace Training.DotNetCore.Project.API.Repositories
                 {
                     Id = Guid.NewGuid(),
                     Name = "Static Auckland Region",
-                    code = "AKL",
+                    Code = "AKL",
                     RegionImageUrl = "https://images.pexels.com/photos/18884939/pexels-photo-18884939.jpeg"
                 },
                 new Region
                 {
                     Id = Guid.NewGuid(),
                     Name = "Static Wellington Region",
-                    code = "WLG",
+                    Code = "WLG",
                     RegionImageUrl = "https://images.pexels.com/photos/2777898/pexels-photo-2777898.jpeg"
                 }
             };

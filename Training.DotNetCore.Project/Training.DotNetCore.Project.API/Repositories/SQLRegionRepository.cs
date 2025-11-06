@@ -52,7 +52,7 @@ namespace Training.DotNetCore.Project.API.Repositories
             }
             //Update Domain Region Model Values Input
             existingRegion.Name = region.Name;
-            existingRegion.code = region.code;
+            existingRegion.Code = region.Code;
             existingRegion.RegionImageUrl = region.RegionImageUrl;
 
             //SaveChangesAsync and return updated Model to client

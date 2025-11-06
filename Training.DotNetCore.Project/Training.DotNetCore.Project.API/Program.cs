@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.Mappings;
 using Training.DotNetCore.Project.API.Repositories;

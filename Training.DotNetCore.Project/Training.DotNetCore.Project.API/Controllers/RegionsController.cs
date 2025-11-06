@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.DTO;
 using Training.DotNetCore.Project.API.Models.Domain;
 using Training.DotNetCore.Project.API.Repositories;

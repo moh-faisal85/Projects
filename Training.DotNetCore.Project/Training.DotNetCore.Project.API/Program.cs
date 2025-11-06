@@ -23,6 +23,8 @@ builder.Services.AddDbContext<NZWalksDbContext>
 //Map and Inject the interface with repository
 //We are telling when object created for IRegionRepository, create it with SQLRegionRepository implementation.
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository> ();
+builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
+
 //Switch from SQLRegionRepository to InMemoryRegionRepository
 //builder.Services.AddScoped<IRegionRepository, InMemoryRegionRepository>();
 

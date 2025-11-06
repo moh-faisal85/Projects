@@ -22,14 +22,25 @@ namespace Training.DotNetCore.Project.API.Mappings
 
             //Actual Implementation : Map Region object with RegionDto: This allows two way mappings.
             //Automapper having Capability to convert list to list and object to object with below mapping
+
+            #region RegionController
             //Used at GetAll , GetById and Delete API Method
             CreateMap<Region, RegionDto>().ReverseMap();
 
             //Used at Create API Method to map values from AddRegionRequestDto to Region and vice versa
-            CreateMap<AddRegionRequestDto,Region>().ReverseMap();
+            CreateMap<AddRegionRequestDto, Region>().ReverseMap();
 
             //Used at Update API Method to map values from UpdateRegionRequestDto to Region and vice versa
             CreateMap<UpdateRegionRequestDto, Region>().ReverseMap();
+            #endregion
+
+            #region WalkController
+            //Walks Controller used
+
+            CreateMap<AddWalkRequestDto, Walk>().ReverseMap();
+            CreateMap<Walk, WalkDto>().ReverseMap();
+            #endregion
+
 
         }
         //public class UserDTO

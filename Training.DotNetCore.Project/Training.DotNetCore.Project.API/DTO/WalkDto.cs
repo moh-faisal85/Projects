@@ -1,6 +1,6 @@
-﻿namespace Training.DotNetCore.Project.API.Models.Domain
+﻿namespace Training.DotNetCore.Project.API.DTO
 {
-    public class Walk
+    public class WalkDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -10,8 +10,5 @@
         public Guid DifficultyId { get; set; }
 
         public Guid RegionId { get; set; }
-        //Navigation Properties
-        public Difficulty Difficulty { get; set; }
-        public Region Region { get; set; }
     }
 }

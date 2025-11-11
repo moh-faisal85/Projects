@@ -20,19 +20,6 @@ namespace Training.DotNetCore.Project.API.Repositories
             return region;
         }
 
-        public async Task<Region?> DeleteAsync(Guid Id)
-        {
-         var existingRegion = await dbContext.Regions.FirstOrDefaultAsync(x=>x.Id == Id);
-            if (existingRegion == null)
-            {
-                return null;
-            }
-
-            dbContext.Regions.Remove(existingRegion);
-            await dbContext.SaveChangesAsync();
-            return existingRegion;
-        }
-
         public async Task<List<Region>> GetAllAsync()
         {
             return await dbContext.Regions.ToListAsync();
@@ -56,6 +43,18 @@ namespace Training.DotNetCore.Project.API.Repositories
             existingRegion.RegionImageUrl = region.RegionImageUrl;
 
             //SaveChangesAsync and return updated Model to client
+            await dbContext.SaveChangesAsync();
+            return existingRegion;
+        }
+        public async Task<Region?> DeleteAsync(Guid Id)
+        {
+            var existingRegion = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == Id);
+            if (existingRegion == null)
+            {
+                return null;
+            }
+
+            dbContext.Regions.Remove(existingRegion);
             await dbContext.SaveChangesAsync();
             return existingRegion;
         }

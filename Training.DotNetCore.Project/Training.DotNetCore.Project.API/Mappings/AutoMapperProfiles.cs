@@ -37,8 +37,10 @@ namespace Training.DotNetCore.Project.API.Mappings
             #region WalkController
             //Walks Controller used
 
-            CreateMap<AddWalkRequestDto, Walk>().ReverseMap();
-            CreateMap<Walk, WalkDto>().ReverseMap();
+            CreateMap<AddWalkRequestDto, Walk>().ReverseMap();//Create
+            CreateMap<Walk, WalkDto>().ReverseMap();//GetAll,GetById, Delete
+            CreateMap<UpdateWalkRequestDto, Walk>().ReverseMap();//Update
+            CreateMap<Difficulty, DifficultyDto>().ReverseMap();//To Get Navigation Properties
             #endregion
 
 

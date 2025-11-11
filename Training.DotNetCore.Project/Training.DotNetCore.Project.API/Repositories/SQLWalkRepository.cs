@@ -1,4 +1,5 @@
-﻿using Training.DotNetCore.Project.API.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.Models.Domain;
 
 namespace Training.DotNetCore.Project.API.Repositories
@@ -16,6 +17,71 @@ namespace Training.DotNetCore.Project.API.Repositories
             await dbContext.Walks.AddAsync(walk);
             await dbContext.SaveChangesAsync();
             return walk;
+        }
+
+        public async Task<List<Walk>> GetAllAsync()
+        {
+            //var walks = await dbContext.Walks.ToListAsync();
+            var walks = await dbContext.Walks
+                            .Include("Difficulty")//Get along with Difficulty Entity
+                            .Include("Region")//Get along with Difficulty Entity
+                            .ToListAsync();
+
+            //var walks = await dbContext.Walks
+            //    .Include(x => x.Difficulty)//Get along with Difficulty Entity
+            //    .Include(x => x.Region)//Get along with Difficulty Entity
+            //    .ToListAsync();
+
+
+            return walks;
+        }
+
+        public async Task<Walk?> GetByIdAsync(Guid Id)
+        {
+            var walk = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == Id);
+            return walk;
+        }
+
+        public async Task<Walk?> UpdateAsync(Guid Id, Walk walk)
+        {
+            //Get Data from Database using Id
+            var walkDomainModel = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == Id);
+
+            //return null if no record exists
+            if (walkDomainModel == null)
+            {
+                return null;
+            }
+            //Update Domain Region Model Values Input
+
+            walkDomainModel.Name = walk.Name;
+            walkDomainModel.Description = walk.Description;
+            walkDomainModel.LengthInKM = walk.LengthInKM;
+            walkDomainModel.WalkImageUrl = walk.WalkImageUrl;
+            walkDomainModel.DifficultyId = walk.DifficultyId;
+            walkDomainModel.RegionId = walk.RegionId;
+
+            //SaveChangesAsync and return updated Model to client
+            await dbContext.SaveChangesAsync();
+
+            //Return Data to client
+            return walkDomainModel;
+        }
+        public async Task<Walk?> DeleteAsync(Guid Id)
+        {
+            //Get Data from Database using Id
+            var walkDomainModel = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == Id);
+
+            //return null if no record exists
+            if (walkDomainModel == null)
+            {
+                return null;
+            }
+            //Remove entity and save changes
+            dbContext.Walks.Remove(walkDomainModel);
+            await dbContext.SaveChangesAsync();
+            return walkDomainModel;
+
         }
     }
 }

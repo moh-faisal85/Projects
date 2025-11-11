@@ -25,6 +25,41 @@ namespace Training.DotNetCore.Project.API.Controllers
             this.mapper = _mapper;
         }
 
+        //POST To Create New Region 
+        //POST: https:..localhost:portnumber/api/regions
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
+        {
+            //Map or Convert DTO to Domain Model
+            //var regionDomainModel = new Region
+            //{
+            //    code = addRegionRequestDto.code,
+            //    Name = addRegionRequestDto.Name,
+            //    RegionImageUrl = addRegionRequestDto.RegionImageUrl
+            //};
+
+            //Map or Convert DTO to Domain Model - Source: addRegionRequestDto and Target: Region
+            var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
+
+            //Call Repository method instead of calling dbcontext method directly.
+            //await dbContext.Regions.AddAsync(regionDomainModel);
+            //await dbContext.SaveChangesAsync();
+            regionDomainModel = await regionRepository.CreateAsync(regionDomainModel);
+            //Map Domain Model back to DTO
+
+            //var regionDto = new RegionDto
+            //{
+            //    Id = regionDomainModel.Id,
+            //    Name = regionDomainModel.Name,
+            //    code = regionDomainModel.code,
+            //    RegionImageUrl = regionDomainModel.RegionImageUrl
+            //};
+
+            //Map or Convert Domain Model to DTO- Source:RegionDomainModel  and Target: RegionDto
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
+            return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
+        }
+
         ////GET ALL REGION
         ////GET: https://localhost:portnumber/api/regions
         [HttpGet]
@@ -80,41 +115,6 @@ namespace Training.DotNetCore.Project.API.Controllers
             var regionDto = mapper.Map<RegionDto>(regionDomainModel);
 
             return Ok(regionDto);
-        }
-
-        //POST To Create New Region 
-        //POST: https:..localhost:portnumber/api/regions
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
-        {
-            //Map or Convert DTO to Domain Model
-            //var regionDomainModel = new Region
-            //{
-            //    code = addRegionRequestDto.code,
-            //    Name = addRegionRequestDto.Name,
-            //    RegionImageUrl = addRegionRequestDto.RegionImageUrl
-            //};
-
-            //Map or Convert DTO to Domain Model - Source: addRegionRequestDto and Target: Region
-            var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
-
-            //Call Repository method instead of calling dbcontext method directly.
-            //await dbContext.Regions.AddAsync(regionDomainModel);
-            //await dbContext.SaveChangesAsync();
-            regionDomainModel = await regionRepository.CreateAsync(regionDomainModel);
-            //Map Domain Model back to DTO
-
-            //var regionDto = new RegionDto
-            //{
-            //    Id = regionDomainModel.Id,
-            //    Name = regionDomainModel.Name,
-            //    code = regionDomainModel.code,
-            //    RegionImageUrl = regionDomainModel.RegionImageUrl
-            //};
-
-            //Map or Convert Domain Model to DTO- Source:RegionDomainModel  and Target: RegionDto
-            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
-            return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
         }
 
         // Update Exisitng Region

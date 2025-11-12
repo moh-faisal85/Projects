@@ -91,7 +91,7 @@ namespace Training.DotNetCore.Project.API.Controllers
             return Ok(WalkDto);
         }
 
-        //DELETE WALK
+        //DELETE WALK by Id
         //DELETE /api/walks/id
         [HttpDelete]
         [Route("{id:guid}")]

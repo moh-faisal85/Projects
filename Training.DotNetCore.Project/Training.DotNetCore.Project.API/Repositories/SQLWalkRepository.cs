@@ -38,7 +38,10 @@ namespace Training.DotNetCore.Project.API.Repositories
 
         public async Task<Walk?> GetByIdAsync(Guid Id)
         {
-            var walk = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == Id);
+            var walk = await dbContext.Walks
+                .Include("Difficulty")//Get along with Difficulty Entity
+                .Include("Region")//Get along with Difficulty Entity
+                .FirstOrDefaultAsync(x => x.Id == Id);
             return walk;
         }
 

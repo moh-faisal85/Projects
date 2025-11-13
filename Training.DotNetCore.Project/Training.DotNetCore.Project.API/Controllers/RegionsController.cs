@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Training.DotNetCore.Project.API.CustomActionFilters;
 using Training.DotNetCore.Project.API.DTO;
 using Training.DotNetCore.Project.API.Models.Domain;
 using Training.DotNetCore.Project.API.Repositories;
@@ -28,43 +29,37 @@ namespace Training.DotNetCore.Project.API.Controllers
         //POST To Create New Region 
         //POST: https:..localhost:portnumber/api/regions
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
-            if (ModelState.IsValid)
-            {
-                //Map or Convert DTO to Domain Model
-                //var regionDomainModel = new Region
-                //{
-                //    code = addRegionRequestDto.code,
-                //    Name = addRegionRequestDto.Name,
-                //    RegionImageUrl = addRegionRequestDto.RegionImageUrl
-                //};
+            //Map or Convert DTO to Domain Model
+            //var regionDomainModel = new Region
+            //{
+            //    code = addRegionRequestDto.code,
+            //    Name = addRegionRequestDto.Name,
+            //    RegionImageUrl = addRegionRequestDto.RegionImageUrl
+            //};
 
-                //Map or Convert DTO to Domain Model - Source: addRegionRequestDto and Target: Region
-                var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
+            //Map or Convert DTO to Domain Model - Source: addRegionRequestDto and Target: Region
+            var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
 
-                //Call Repository method instead of calling dbcontext method directly.
-                //await dbContext.Regions.AddAsync(regionDomainModel);
-                //await dbContext.SaveChangesAsync();
-                regionDomainModel = await regionRepository.CreateAsync(regionDomainModel);
-                //Map Domain Model back to DTO
+            //Call Repository method instead of calling dbcontext method directly.
+            //await dbContext.Regions.AddAsync(regionDomainModel);
+            //await dbContext.SaveChangesAsync();
+            regionDomainModel = await regionRepository.CreateAsync(regionDomainModel);
+            //Map Domain Model back to DTO
 
-                //var regionDto = new RegionDto
-                //{
-                //    Id = regionDomainModel.Id,
-                //    Name = regionDomainModel.Name,
-                //    code = regionDomainModel.code,
-                //    RegionImageUrl = regionDomainModel.RegionImageUrl
-                //};
+            //var regionDto = new RegionDto
+            //{
+            //    Id = regionDomainModel.Id,
+            //    Name = regionDomainModel.Name,
+            //    code = regionDomainModel.code,
+            //    RegionImageUrl = regionDomainModel.RegionImageUrl
+            //};
 
-                //Map or Convert Domain Model to DTO- Source:RegionDomainModel  and Target: RegionDto
-                var regionDto = mapper.Map<RegionDto>(regionDomainModel);
-                return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            //Map or Convert Domain Model to DTO- Source:RegionDomainModel  and Target: RegionDto
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
+            return CreatedAtAction(nameof(GetById), new { id = regionDto.Id }, regionDto);
         }
 
         ////GET ALL REGION
@@ -128,6 +123,7 @@ namespace Training.DotNetCore.Project.API.Controllers
         // PUT: http://localhost:portnumber/api/regions/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Check region exists
@@ -187,7 +183,7 @@ namespace Training.DotNetCore.Project.API.Controllers
             //Delete Region if exists
             //dbContext.Regions.Remove(regionDomainModel);
             //await dbContext.SaveChangesAsync();
-             
+
             //Return Deleted Region back
             //var regionDto = new RegionDto
             //{

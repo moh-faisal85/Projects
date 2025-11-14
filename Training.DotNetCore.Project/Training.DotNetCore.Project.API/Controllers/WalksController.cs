@@ -38,11 +38,17 @@ namespace Training.DotNetCore.Project.API.Controllers
         }
 
         //GET WALKS
-        //GET: /api/walks?filterOn=ColumnName&filterQuery=ColumnValue&sortBy=SortColumnName&isAscending=OrderValue
+        //GET: /api/walks?filterOn=ColumnName&filterQuery=ColumnValue&sortBy=SortColumnName&isAscending=OrderValue&pageNumber=Number&pageSize=Size
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool? isAscending)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? filterOn,
+            [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy,
+            [FromQuery] bool? isAscending,
+            [FromQuery] int? pageNumber = 1,
+            [FromQuery] int? pageSize = 1000)
         {
-            var walksDomainModel = await walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending ?? true);
+            var walksDomainModel = await walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending ?? true, (int) pageNumber, (int) pageSize);
 
             var walksDto = mapper.Map<List<WalkDto>>(walksDomainModel);
 

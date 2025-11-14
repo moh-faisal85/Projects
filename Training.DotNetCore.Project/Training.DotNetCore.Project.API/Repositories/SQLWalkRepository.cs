@@ -19,7 +19,7 @@ namespace Training.DotNetCore.Project.API.Repositories
             return walk;
         }
 
-        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null, string? sortBy = null, bool? isAscending = true)
+        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null, string? sortBy = null, bool? isAscending = true, int pageNumber = 1, int pageSize = 1000)
         {
             //var walks = await dbContext.Walks.ToListAsync();
 
@@ -63,7 +63,12 @@ namespace Training.DotNetCore.Project.API.Repositories
                 }
             }
 
-            return await walks.ToListAsync();
+            //Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+
+
+            //return await walks.ToListAsync();
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Walk?> GetByIdAsync(Guid Id)

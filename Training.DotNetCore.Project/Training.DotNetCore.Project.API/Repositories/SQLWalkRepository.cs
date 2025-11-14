@@ -19,7 +19,7 @@ namespace Training.DotNetCore.Project.API.Repositories
             return walk;
         }
 
-        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
+        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null, string? sortBy = null, bool? isAscending = true)
         {
             //var walks = await dbContext.Walks.ToListAsync();
 
@@ -49,6 +49,20 @@ namespace Training.DotNetCore.Project.API.Repositories
                     walks = walks.Where(x => x.Name.Contains(filterQuery));
                 }
             }
+
+            //Sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false && isAscending != null)
+            {
+                if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = ((bool)isAscending) ? walks.OrderBy(x => x.Name) : walks.OrderByDescending(x => x.Name);
+                }
+                else if (sortBy.Equals("Length", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = ((bool)isAscending) ? walks.OrderBy(x => x.LengthInKM) : walks.OrderByDescending(x => x.LengthInKM);
+                }
+            }
+
             return await walks.ToListAsync();
         }
 

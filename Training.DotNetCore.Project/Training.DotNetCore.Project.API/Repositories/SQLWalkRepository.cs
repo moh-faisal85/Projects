@@ -19,21 +19,37 @@ namespace Training.DotNetCore.Project.API.Repositories
             return walk;
         }
 
-        public async Task<List<Walk>> GetAllAsync()
+        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
         {
             //var walks = await dbContext.Walks.ToListAsync();
-            var walks = await dbContext.Walks
+
+            var walks = dbContext.Walks
                             .Include("Difficulty")//Get along with Difficulty Entity
                             .Include("Region")//Get along with Difficulty Entity
-                            .ToListAsync();
+                            .AsQueryable();
 
+            //Second Commented
+            //var walks = await dbContext.Walks
+            //                .Include("Difficulty")//Get along with Difficulty Entity
+            //                .Include("Region")//Get along with Difficulty Entity
+            //                .ToListAsync();
+
+            //First Commented
             //var walks = await dbContext.Walks
             //    .Include(x => x.Difficulty)//Get along with Difficulty Entity
             //    .Include(x => x.Region)//Get along with Difficulty Entity
             //    .ToListAsync();
 
+            //Apply Filter
 
-            return walks;
+            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false)
+            {
+                if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(x => x.Name.Contains(filterQuery));
+                }
+            }
+            return await walks.ToListAsync();
         }
 
         public async Task<Walk?> GetByIdAsync(Guid Id)

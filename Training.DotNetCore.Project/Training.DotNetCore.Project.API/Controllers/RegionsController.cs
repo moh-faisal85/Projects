@@ -13,7 +13,7 @@ namespace Training.DotNetCore.Project.API.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class RegionsController : ControllerBase
     {
         //private readonly NZWalksDbContext dbContext;
@@ -32,6 +32,7 @@ namespace Training.DotNetCore.Project.API.Controllers
         //POST: https:..localhost:portnumber/api/regions
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles ="Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //Map or Convert DTO to Domain Model
@@ -67,6 +68,7 @@ namespace Training.DotNetCore.Project.API.Controllers
         ////GET ALL REGION
         ////GET: https://localhost:portnumber/api/regions
         [HttpGet]
+        [Authorize(Roles = "Writer,Reader")]
         public async Task<IActionResult> GetAll() //async Task Added to make this action async
         {
             //Get Data From Database - Domain Models
@@ -96,6 +98,7 @@ namespace Training.DotNetCore.Project.API.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer,Reader")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             //Get Data From Database - Domain Models
@@ -126,6 +129,7 @@ namespace Training.DotNetCore.Project.API.Controllers
         [HttpPut]
         [Route("{id:Guid}")]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Check region exists
@@ -173,6 +177,7 @@ namespace Training.DotNetCore.Project.API.Controllers
         // DELETE: http://localhost:portnumber/api/regions/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             //Check region exists

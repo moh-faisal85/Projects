@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Training.DotNetCore.Project.API.CustomActionFilters;
 using Training.DotNetCore.Project.API.DTO;
@@ -12,6 +13,7 @@ namespace Training.DotNetCore.Project.API.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionsController : ControllerBase
     {
         //private readonly NZWalksDbContext dbContext;

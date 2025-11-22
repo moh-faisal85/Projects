@@ -2,7 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Training.DotNetCore.Project.API.Data;
@@ -14,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+//
+builder.Services.AddHttpContextAccessor();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -66,7 +69,7 @@ builder.Services.AddDbContext<NZWalksAuthDbContext>
             builder.Configuration.GetConnectionString("NZWalksAuthConnectionString")//Read value from AppSettings
         )
     );
-
+#region Inject Interface and Repostory Classes
 //Map and Inject the interface with repository
 //We are telling when object created for IRegionRepository, create it with SQLRegionRepository implementation.
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
@@ -77,6 +80,11 @@ builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 //Switch from SQLRegionRepository to InMemoryRegionRepository
 //builder.Services.AddScoped<IRegionRepository, InMemoryRegionRepository>();
+
+//Inject image repository
+builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
+
+#endregion
 
 //Scan Automapper Profiles
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
@@ -125,6 +133,13 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+//Add below middleware to enable the access of static file using browser
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+    RequestPath = "/Images"
+});
 
 app.MapControllers();
 

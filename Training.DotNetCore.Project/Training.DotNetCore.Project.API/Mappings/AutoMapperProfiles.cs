@@ -43,6 +43,10 @@ namespace Training.DotNetCore.Project.API.Mappings
             CreateMap<Difficulty, DifficultyDto>().ReverseMap();//To Get Navigation Properties
             #endregion
 
+            //#region ImagesController
+            //CreateMap<ImageUploadRequestDto, Image>().ReverseMap();
+            //#endregion
+
 
         }
         //public class UserDTO

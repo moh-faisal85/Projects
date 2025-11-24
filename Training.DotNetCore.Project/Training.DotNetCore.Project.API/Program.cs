@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.Mappings;
 using Training.DotNetCore.Project.API.Repositories;
@@ -12,6 +13,29 @@ using Training.DotNetCore.Project.API.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+#region Add / Inject Serilog Configurations
+//Inject LoggerConfiguration
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    //.MinimumLevel.Information() 
+    .MinimumLevel.Warning() //debug, information log will be skipped to log
+    /*
+ Serilog follows a strict hierarchy of log levels: If a log level is specified, any levels below it in the hierarchy will not appear in the log output.
+    Level	    Severity	Description
+    Verbose	    Lowest	    Logs everything (detailed internal information). Rare in production.
+    Debug	    Low	        Diagnostic information useful for developers during debugging.
+    Information	Normal	    Successful events, app flow, business process updates.
+    Warning	    Medium	    Something unexpected happened, but app continues working.
+    Error	    High	    A failure occurred; unable to process a request.
+    Fatal	    Highest	    Application crash, critical failure, system shutdown.
+ */
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
+#endregion
 
 builder.Services.AddControllers();
 //

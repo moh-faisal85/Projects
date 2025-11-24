@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Training.DotNetCore.Project.API.CustomActionFilters;
@@ -19,20 +20,25 @@ namespace Training.DotNetCore.Project.API.Controllers
         //private readonly NZWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<RegionsController> logger;
 
         //public RegionsController(NZWalksDbContext _dbContext, IRegionRepository _regionRepository)
-        public RegionsController(IRegionRepository _regionRepository, IMapper _mapper)
+        public RegionsController(
+            IRegionRepository _regionRepository,
+            IMapper _mapper,
+            ILogger<RegionsController> logger)
         {
             //this.dbContext = _dbContext;
             this.regionRepository = _regionRepository;
             this.mapper = _mapper;
+            this.logger = logger;
         }
 
         //POST To Create New Region 
         //POST: https:..localhost:portnumber/api/regions
         [HttpPost]
         [ValidateModel]
-        [Authorize(Roles ="Writer")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //Map or Convert DTO to Domain Model
@@ -68,29 +74,46 @@ namespace Training.DotNetCore.Project.API.Controllers
         ////GET ALL REGION
         ////GET: https://localhost:portnumber/api/regions
         [HttpGet]
-        [Authorize(Roles = "Writer,Reader")]
+        //[Authorize(Roles = "Writer,Reader")] //Temporarely comment Authorize code
         public async Task<IActionResult> GetAll() //async Task Added to make this action async
         {
-            //Get Data From Database - Domain Models
-            //var regionDomainModels = await dbContext.Regions.ToListAsync();//await added to enable this async operation
-            var regionDomainModels = await regionRepository.GetAllAsync();//await added to enable this async operation
+            try
+            {
+                throw new Exception("This is custom exception");
 
-            // Map Domain Models to DTOs
-            //var regionDto = new List<RegionDto>();
-            //foreach (var regionDomainModel in regionDomainModels)
-            //{
-            //    regionDto.Add(new RegionDto()
-            //    {
-            //        Id = regionDomainModel.Id,
-            //        Name = regionDomainModel.Name,
-            //        code = regionDomainModel.code,
-            //        RegionImageUrl = regionDomainModel.RegionImageUrl
-            //    });
-            //}
+                logger.LogInformation("GetAll Region Method was Invoked");
+                logger.LogWarning("This is a warning log");
+                logger.LogError("This is error log");
+                //Get Data From Database - Domain Models
+                //var regionDomainModels = await dbContext.Regions.ToListAsync();//await added to enable this async operation
+                var regionDomainModels = await regionRepository.GetAllAsync();//await added to enable this async operation
 
-            //Map object regionDomainModels to RegionDto
-            var regionDtos = mapper.Map<List<RegionDto>>(regionDomainModels);
-            return Ok(regionDtos);
+                // Map Domain Models to DTOs
+                //var regionDto = new List<RegionDto>();
+                //foreach (var regionDomainModel in regionDomainModels)
+                //{
+                //    regionDto.Add(new RegionDto()
+                //    {
+                //        Id = regionDomainModel.Id,
+                //        Name = regionDomainModel.Name,
+                //        code = regionDomainModel.code,
+                //        RegionImageUrl = regionDomainModel.RegionImageUrl
+                //    });
+                //}
+
+                //Map object regionDomainModels to RegionDto
+
+                logger.LogInformation($"Finished Get All Regions request with data: {JsonSerializer.Serialize(regionDomainModels)} ");
+                var regionDtos = mapper.Map<List<RegionDto>>(regionDomainModels);
+
+                return Ok(regionDtos);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                throw;
+            }
+
         }
 
         // GET SINGLE REGION (Get Region By ID) 

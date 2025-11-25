@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.Mappings;
+using Training.DotNetCore.Project.API.Middlewares;
 using Training.DotNetCore.Project.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 //Inject LoggerConfiguration
 var logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("Logs/NzLogs_Log.txt", rollingInterval: RollingInterval.Minute)
+    .WriteTo.File(formatter: new Serilog.Formatting.Json.JsonFormatter(renderMessage: true),
+                "Logs/NzLogs_Log.json", 
+                rollingInterval: RollingInterval.Minute, 
+                shared: true)
     //.MinimumLevel.Information() 
-    .MinimumLevel.Warning() //debug, information log will be skipped to log
+    //.MinimumLevel.Warning() //debug, information log will be skipped to log
+    .MinimumLevel.Error()
     /*
  Serilog follows a strict hierarchy of log levels: If a log level is specified, any levels below it in the hierarchy will not appear in the log output.
     Level	    Severity	Description
@@ -152,6 +157,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//Register Custom Middle
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 //Jwt Authentication

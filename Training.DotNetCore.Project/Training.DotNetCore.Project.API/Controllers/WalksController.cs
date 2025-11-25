@@ -40,6 +40,8 @@ namespace Training.DotNetCore.Project.API.Controllers
         //GET WALKS
         //GET: /api/walks?filterOn=ColumnName&filterQuery=ColumnValue&sortBy=SortColumnName&isAscending=OrderValue&pageNumber=Number&pageSize=Size
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? filterOn,
             [FromQuery] string? filterQuery,
@@ -48,8 +50,10 @@ namespace Training.DotNetCore.Project.API.Controllers
             [FromQuery] int? pageNumber = 1,
             [FromQuery] int? pageSize = 1000)
         {
-            var walksDomainModel = await walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending ?? true, (int) pageNumber, (int) pageSize);
+            var walksDomainModel = await walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending ?? true, (int)pageNumber, (int)pageSize);
 
+            //Create an Exception 
+            throw new Exception("This is new Exception to validate Global Custom Exception Middleware");
             var walksDto = mapper.Map<List<WalkDto>>(walksDomainModel);
 
             return Ok(walksDto);

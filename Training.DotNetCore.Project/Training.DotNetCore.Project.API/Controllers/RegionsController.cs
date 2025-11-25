@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -77,8 +78,8 @@ namespace Training.DotNetCore.Project.API.Controllers
         //[Authorize(Roles = "Writer,Reader")] //Temporarely comment Authorize code
         public async Task<IActionResult> GetAll() //async Task Added to make this action async
         {
-            try
-            {
+            //try //Commented due to centralized exception handling
+            //{
                 throw new Exception("This is custom exception");
 
                 logger.LogInformation("GetAll Region Method was Invoked");
@@ -107,12 +108,13 @@ namespace Training.DotNetCore.Project.API.Controllers
                 var regionDtos = mapper.Map<List<RegionDto>>(regionDomainModels);
 
                 return Ok(regionDtos);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, ex.Message);
-                throw;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    logger.LogError(ex, ex.Message);
+            //    //throw;
+            //    return Problem("Something went wrong", null, (int)HttpStatusCode.InternalServerError);
+            //}
 
         }
 

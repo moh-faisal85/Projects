@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 //Inject LoggerConfiguration
 var logger = new LoggerConfiguration()
     .WriteTo.Console()
+    .WriteTo.File("Logs/NzLogs_Log.txt", rollingInterval: RollingInterval.Minute)
     //.MinimumLevel.Information() 
     .MinimumLevel.Warning() //debug, information log will be skipped to log
     /*
@@ -163,6 +164,21 @@ app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
     RequestPath = "/Images"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Logs")),
+    RequestPath = "/Logs",
+    ServeUnknownFileTypes = true // allows .txt, .log etc.
+}
+);
+
+// Directory browsing (to list all files)
+app.UseDirectoryBrowser(new DirectoryBrowserOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Logs")),
+    RequestPath = "/Logs"
 });
 
 app.MapControllers();

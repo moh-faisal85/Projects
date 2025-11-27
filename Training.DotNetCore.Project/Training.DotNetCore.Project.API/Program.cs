@@ -17,29 +17,38 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Add / Inject Serilog Configurations
 //Inject LoggerConfiguration
-var logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File(formatter: new Serilog.Formatting.Json.JsonFormatter(renderMessage: true),
-                "Logs/NzLogs_Log.json", 
-                rollingInterval: RollingInterval.Minute, 
-                shared: true)
-    //.MinimumLevel.Information() 
-    //.MinimumLevel.Warning() //debug, information log will be skipped to log
-    .MinimumLevel.Error()
-    /*
- Serilog follows a strict hierarchy of log levels: If a log level is specified, any levels below it in the hierarchy will not appear in the log output.
-    Level	    Severity	Description
-    Verbose	    Lowest	    Logs everything (detailed internal information). Rare in production.
-    Debug	    Low	        Diagnostic information useful for developers during debugging.
-    Information	Normal	    Successful events, app flow, business process updates.
-    Warning	    Medium	    Something unexpected happened, but app continues working.
-    Error	    High	    A failure occurred; unable to process a request.
-    Fatal	    Highest	    Application crash, critical failure, system shutdown.
- */
+//var logger = new LoggerConfiguration()
+//    .WriteTo.Console()
+//    .WriteTo.File(formatter: new Serilog.Formatting.Json.JsonFormatter(renderMessage: true),
+//                "Logs/NzLogs_Log.json", 
+//                rollingInterval: RollingInterval.Minute, 
+//                shared: true)
+//    //.MinimumLevel.Information() 
+//    //.MinimumLevel.Warning() //debug, information log will be skipped to log
+//    .MinimumLevel.Error()
+//    /*
+// Serilog follows a strict hierarchy of log levels: If a log level is specified, any levels below it in the hierarchy will not appear in the log output.
+//    Level	    Severity	Description
+//    Verbose	    Lowest	    Logs everything (detailed internal information). Rare in production.
+//    Debug	    Low	        Diagnostic information useful for developers during debugging.
+//    Information	Normal	    Successful events, app flow, business process updates.
+//    Warning	    Medium	    Something unexpected happened, but app continues working.
+//    Error	    High	    A failure occurred; unable to process a request.
+//    Fatal	    Highest	    Application crash, critical failure, system shutdown.
+// */
+//    .CreateLogger();
+
+//builder.Logging.ClearProviders();
+//builder.Logging.AddSerilog(logger);
+
+// Read Serilog from appsettings.json
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(logger);
+builder.Host.UseSerilog();
 
 #endregion
 

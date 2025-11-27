@@ -67,8 +67,12 @@ namespace Training.DotNetCore.Project.API.Middlewares
                 },
                 User = context.User?.Identity?.Name ?? "anonymous"
             };
-
-            _logger.LogError("Unhandled Exception: {@ExceptionLog}", log);
+            /*
+             Exception: ex
+             MessageTemplate = "Unhandled Exception: {@ExceptionLog}"
+             Level = LogError = Error
+             */
+            _logger.LogError(ex, "Unhandled Exception: {@ExceptionLog}", log);
 
             // === Return unified JSON response ===
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

@@ -45,6 +45,7 @@ var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
+    .Enrich.WithProperty("UserName", Environment.UserName)
     .CreateLogger();
 
 builder.Logging.ClearProviders();

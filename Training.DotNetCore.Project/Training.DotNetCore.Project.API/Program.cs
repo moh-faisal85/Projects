@@ -1,11 +1,13 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Training.DotNetCore.Project.API;
 using Training.DotNetCore.Project.API.Data;
 using Training.DotNetCore.Project.API.Mappings;
 using Training.DotNetCore.Project.API.Middlewares;
@@ -56,8 +58,19 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 
 //ASP.NET Core Web API Versioning
-builder.Services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
-//AssumeDefaultVersionWhenUnspecified is assumes it will go to first version 1.0
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true; //AssumeDefaultVersionWhenUnspecified is assumes it will go to first version like 1.0
+    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.UseApiBehavior = false;
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 //
 builder.Services.AddHttpContextAccessor();
 
@@ -163,13 +176,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     IssuerSigningKey = new SymmetricSecurityKey(
         Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
 });
+//Inject ConfigureSwaggerOptions
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 var app = builder.Build();
+
+//Swagger Error Fix
+var versionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in versionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+
+    });
 }
 
 //Register Custom Middle

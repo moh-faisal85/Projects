@@ -54,6 +54,10 @@ builder.Host.UseSerilog();
 #endregion
 
 builder.Services.AddControllers();
+
+//ASP.NET Core Web API Versioning
+builder.Services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
+//AssumeDefaultVersionWhenUnspecified is assumes it will go to first version 1.0
 //
 builder.Services.AddHttpContextAccessor();
 

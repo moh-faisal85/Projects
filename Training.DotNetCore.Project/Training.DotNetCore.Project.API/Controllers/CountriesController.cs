@@ -4,7 +4,7 @@ using Training.DotNetCore.Project.API.DTO;
 
 namespace Training.DotNetCore.Project.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
